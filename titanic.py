@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 # Imports and Data
@@ -12,10 +12,33 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 get_ipython().run_line_magic('matplotlib', 'inline')
 
+# machine learning
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC, LinearSVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import Perceptron
+from sklearn.linear_model import SGDClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
+# cross, kfold, spit data etc
+from sklearn.model_selection import train_test_split #for split the data
+from sklearn.metrics import accuracy_score  #for accuracy_score
+from sklearn.model_selection import KFold #for K-fold cross validation
+from sklearn.model_selection import cross_val_score #score evaluation
+from sklearn.model_selection import cross_val_predict #prediction
+from sklearn.metrics import confusion_matrix #for confusion matrix
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import GradientBoostingClassifier
+
+
 data_train = pd.read_csv('Data/train.csv')
 data_test = pd.read_csv('Data/test.csv')
 
-data_train.sample(3)
+data_train.sample(5)
 
 
 # In[ ]:
@@ -36,7 +59,7 @@ sns.pointplot(x="Pclass", y="Survived", hue="Sex", data=data_train,
               markers=["*", "o"], linestyles=["-", "--"]);
 
 
-# In[ ]:
+# In[2]:
 
 
 # Transforming Data and Cleanup 
@@ -67,27 +90,27 @@ def simplify_fares(df):
 
 # Name and name prefix that indicates the sex
 # maybe i can drop this
-def format_name(df):
-    df['Lname'] = df.Name.apply(lambda x: x.split(' ')[0])
-    df['NamePrefix'] = df.Name.apply(lambda x: x.split(' ')[1])
-    return df 
+# def format_name(df):
+#     df['Lname'] = df.Name.apply(lambda x: x.split(' ')[0])
+#     df['NamePrefix'] = df.Name.apply(lambda x: x.split(' ')[1])
+#     return df 
 
 # Drop columns or features that doesn't matter
 def drop_features(df):
-    return df.drop(['Ticket', 'Name'], axis=1)
+    return df.drop(['Ticket', 'Name', 'Embarked'], axis=1)
 
 # maybe i can drop this
-def embarked_nan(df):
-    df.Embarked = df.Embarked.fillna('U')
-    return df
+# def embarked_nan(df):
+#     df.Embarked = df.Embarked.fillna('U')
+#     return df
 
 def transform_features(df):
     df = simplify_ages(df)
     df = simplify_cabins(df)
     df = simplify_fares(df)
-    df = format_name(df)
+    #df = format_name(df)
     df = drop_features(df)
-    df = embarked_nan(df)
+    #df = embarked_nan(df)
     return df
 
 data_train = transform_features(data_train)
@@ -118,14 +141,15 @@ sns.barplot(x="Cabin", y="Survived", hue="Sex", data=data_train)
 sns.barplot(x="Fare", y="Survived", hue="Sex", data=data_train)
 
 
-# In[ ]:
+# In[3]:
 
 
 # Convert unique labels in columns to numbers
-# maybe i can drop Emabarked, NamePrefix and Lname
+# maybe i can drop Embarked, NamePrefix and Lname
 from sklearn import preprocessing
 def encode_features(df_train, df_test):
-    features = ['Fare', 'Cabin', 'Age', 'Sex', 'Lname', 'NamePrefix', 'Embarked']
+    # 'Lname', 'NamePrefix', 'Embarked'
+    features = ['Fare', 'Cabin', 'Age', 'Sex']
     df_combined = pd.concat([df_train[features], df_test[features]])
     
     for feature in features:
@@ -142,22 +166,27 @@ data_train.head()
 # In[ ]:
 
 
+# --
+# --
+# --
+# --
+# --
+# --
+# --
+# --
+# --
+# --
+
+
+# In[ ]:
+
+
 # Simple way to resolve the problem
 # no cross validation
 
 
 # In[ ]:
 
-
-# machine learning
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC, LinearSVC
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.linear_model import Perceptron
-from sklearn.linear_model import SGDClassifier
-from sklearn.tree import DecisionTreeClassifier
 
 X_train = data_train.drop(['Survived', 'PassengerId'], axis=1)
 Y_train = data_train["Survived"]
@@ -313,22 +342,29 @@ submission.to_csv('submission.csv', index=False)
 # In[ ]:
 
 
-# A better way...
+# --
+# --
+# --
+# --
+# --
+# --
+# --
+# --
+# --
+# --
+
+
+# In[ ]:
+
+
+# Test 30%
 # Cross validation
 
 
 # In[ ]:
 
 
-from sklearn.model_selection import train_test_split #for split the data
-from sklearn.metrics import accuracy_score  #for accuracy_score
-from sklearn.model_selection import KFold #for K-fold cross validation
-from sklearn.model_selection import cross_val_score #score evaluation
-from sklearn.model_selection import cross_val_predict #prediction
-from sklearn.metrics import confusion_matrix #for confusion matrix
-from sklearn.model_selection import GridSearchCV
-from sklearn.ensemble import GradientBoostingClassifier
-all_features = data_train.drop("Survived",axis=1)
+all_features = data_train.drop(["Survived", 'PassengerId'],axis=1)
 Targeted_feature = data_train["Survived"]
 X_train,X_test,y_train,y_test = train_test_split(all_features,Targeted_feature,test_size=0.3,random_state=42)
 X_train.shape,X_test.shape,y_train.shape,y_test.shape
@@ -337,8 +373,7 @@ X_train.shape,X_test.shape,y_train.shape,y_test.shape
 # In[ ]:
 
 
-# machine learning
-from sklearn.linear_model import LogisticRegression # Logistic Regression
+# Logistic Regression
 
 model = LogisticRegression(solver='liblinear')
 model.fit(X_train,y_train)
@@ -357,7 +392,7 @@ plt.title('Confusion_matrix', y=1.05, size=15)
 
 
 # Random Forests
-from sklearn.ensemble import RandomForestClassifier
+
 model = RandomForestClassifier(criterion='gini', n_estimators=700,
                              min_samples_split=10,min_samples_leaf=1,
                              max_features='auto',oob_score=True,
@@ -378,7 +413,6 @@ plt.title('Confusion_matrix', y=1.05, size=15)
 
 
 # Support Vector Machines
-from sklearn.svm import SVC, LinearSVC
 
 model = SVC(gamma='auto')
 model.fit(X_train,y_train)
@@ -397,8 +431,6 @@ plt.title('Confusion_matrix', y=1.05, size=15)
 
 
 ##knn
-from sklearn.neighbors import KNeighborsClassifier
-
 
 model = KNeighborsClassifier(n_neighbors = 4)
 model.fit(X_train,y_train)
@@ -417,7 +449,7 @@ plt.title('Confusion_matrix', y=1.05, size=15)
 
 
 # Gaussian Naive Bayes
-from sklearn.naive_bayes import GaussianNB
+
 model= GaussianNB()
 model.fit(X_train,y_train)
 prediction_gnb=model.predict(X_test)
@@ -435,7 +467,7 @@ plt.title('Confusion_matrix', y=1.05, size=15)
 
 
 # Decision Tree
-from sklearn.tree import DecisionTreeClassifier
+
 model= DecisionTreeClassifier(criterion='gini', 
                              min_samples_split=10,min_samples_leaf=1,
                              max_features='auto')
@@ -454,7 +486,8 @@ plt.title('Confusion_matrix', y=1.05, size=15)
 # In[ ]:
 
 
-from sklearn.ensemble import AdaBoostClassifier
+# AdaBoostClassifier
+
 model= AdaBoostClassifier()
 model.fit(X_train,y_train)
 prediction_adb=model.predict(X_test)
@@ -471,7 +504,8 @@ plt.title('Confusion_matrix', y=1.05, size=15)
 # In[ ]:
 
 
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+# LinearDiscriminantAnalysis
+
 model= LinearDiscriminantAnalysis()
 model.fit(X_train,y_train)
 prediction_lda=model.predict(X_test)
@@ -488,7 +522,8 @@ plt.title('Confusion_matrix', y=1.05, size=15)
 # In[ ]:
 
 
-from sklearn.ensemble import GradientBoostingClassifier
+# GradientBoostingClassifier
+
 model= GradientBoostingClassifier()
 model.fit(X_train,y_train)
 prediction_gbc=model.predict(X_test)
@@ -506,6 +541,7 @@ plt.title('Confusion_matrix', y=1.05, size=15)
 
 
 # Models evaluation
+
 models = pd.DataFrame({
     'Model': ['Support Vector Machines', 'KNN', 'Logistic Regression', 
               'Random Forest', 'Naive Bayes', 'AdaBoostClassifier', 
@@ -520,20 +556,26 @@ models.sort_values(by='Score',ascending=False)
 # In[ ]:
 
 
-# using Hyper-Parameters Tuning in the better models
+# --
+# --
+# --
+# --
+# --
+# --
+# --
+# --
+# --
+# --
 
 
 # In[ ]:
 
 
-from sklearn.model_selection import train_test_split #for split the data
-from sklearn.metrics import accuracy_score  #for accuracy_score
-from sklearn.model_selection import KFold #for K-fold cross validation
-from sklearn.model_selection import cross_val_score #score evaluation
-from sklearn.model_selection import cross_val_predict #prediction
-from sklearn.metrics import confusion_matrix #for confusion matrix
-from sklearn.model_selection import GridSearchCV
-from sklearn.ensemble import GradientBoostingClassifier
+# using Hyper-Parameters Tuning in the better models
+
+
+# In[4]:
+
 
 train_X = data_train.drop(['Survived', 'PassengerId'], axis=1)
 train_Y= data_train["Survived"]
@@ -541,12 +583,79 @@ test_X  = data_test.drop("PassengerId", axis=1).copy()
 train_X.shape, train_Y.shape, test_X.shape
 
 
+# In[5]:
+
+
+# Decision Tree
+
+model= DecisionTreeClassifier()
+
+model = DecisionTreeClassifier()
+min_samples_leaf = range(1, 100)
+
+## Search grid for optimal parameters
+param_grid = {"min_samples_leaf" :min_samples_leaf}
+
+model_rf = GridSearchCV(model,param_grid = param_grid, cv=5, scoring="accuracy", n_jobs= 4, verbose = 1)
+
+model_rf.fit(train_X,train_Y)
+
+# Best score
+print(model_rf.best_score_)
+
+#best estimator
+model_rf.best_estimator_
+
+
 # In[ ]:
 
 
-# Random Forest Classifier Parameters tunning 
+# knn
+
+model = KNeighborsClassifier()
+n_neigh = range(10, 711, 100)
+
+## Search grid for optimal parameters
+param_grid = {"n_neighbors" :n_neigh}
+
+model_rf = GridSearchCV(model,param_grid = param_grid, cv=5, scoring="accuracy", n_jobs= 4, verbose = 1)
+
+model_rf.fit(train_X,train_Y)
+
+# Best score
+print(model_rf.best_score_)
+
+#best estimator
+model_rf.best_estimator_
+
+
+# In[ ]:
+
+
+# SVC
+
+model= SVC()
+param_grid = {'kernel': ['rbf','linear'], 
+                  'gamma': [ 0.001, 0.01, 0.1, 1],
+                  'C': [1, 10, 50, 100,200,300, 1000]}
+
+modelsvm = GridSearchCV(model,param_grid = param_grid, cv=5, scoring="accuracy", n_jobs= 4, verbose = 1)
+
+modelsvm.fit(train_X,train_Y)
+
+print(modelsvm.best_estimator_)
+
+# Best score
+print(modelsvm.best_score_)
+
+
+# In[ ]:
+
+
+# Random Forest Classifier Parameters tunning
+
 model = RandomForestClassifier()
-n_estim=range(100,1000,100)
+n_estim=range(5,1000,100)
 
 ## Search grid for optimal parameters
 param_grid = {"n_estimators" :n_estim}
@@ -568,33 +677,58 @@ model_rf.best_estimator_
 # In[ ]:
 
 
-# SVC
-model= SVC()
-param_grid = {'kernel': ['rbf','linear'], 
-                  'gamma': [ 0.001, 0.01, 0.1, 1],
-                  'C': [1, 10, 50, 100,200,300, 1000]}
-
-modelsvm = GridSearchCV(model,param_grid = param_grid, cv=5, scoring="accuracy", n_jobs= 4, verbose = 1)
-
-modelsvm.fit(train_X,train_Y)
-
-print(modelsvm.best_estimator_)
-
-# Best score
-print(modelsvm.best_score_)
+# --
+# --
+# --
+# --
+# --
+# --
+# --
+# --
+# --
+# --
 
 
 # In[ ]:
 
 
-# choosing Random Forests 
-# temporary...
-from sklearn.ensemble import RandomForestClassifier
+# Choosing the best
+
+
+# In[6]:
+
+
+# choosing DecisionTreeClassifier
+# best score 0.74641
+
+decisiontreeModel = DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None,
+            min_impurity_decrease=0.0, min_impurity_split=None,
+            min_samples_leaf=2, min_samples_split=2,
+            min_weight_fraction_leaf=0.0, presort=False, random_state=None,
+            splitter='best')
+decisiontreeModel.fit(train_X, train_Y)
+Y_pred_rf = decisiontreeModel.predict(test_X)
+decisiontreeModel.score(train_X,train_Y)
+acc_decisiontreeModel = round(decisiontreeModel.score(train_X, train_Y) * 100, 2)
+
+print("Important features")
+pd.Series(decisiontreeModel.feature_importances_,train_X.columns).sort_values(ascending=True).plot.barh(width=0.8)
+print('__'*30)
+print(acc_decisiontreeModel)
+
+
+# In[ ]:
+
+
+# choosing Random Forest
+# best score 0.74641
+
 random_forest = RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
             max_depth=None, max_features='auto', max_leaf_nodes=None,
             min_impurity_decrease=0.0, min_impurity_split=None,
             min_samples_leaf=1, min_samples_split=2,
-            min_weight_fraction_leaf=0.0, n_estimators=600, n_jobs=None,
+            min_weight_fraction_leaf=0.0, n_estimators=705, n_jobs=None,
             oob_score=False, random_state=None, verbose=0,
             warm_start=False)
 random_forest.fit(train_X, train_Y)
@@ -611,10 +745,63 @@ print(acc_random_forest)
 # In[ ]:
 
 
+# Choosing SVC
+# best score 0.73684
+
+svcModel = SVC(C=10, cache_size=200, class_weight=None, coef0=0.0,
+  decision_function_shape='ovr', degree=3, gamma=0.1, kernel='rbf',
+  max_iter=-1, probability=False, random_state=None, shrinking=True,
+  tol=0.001, verbose=False)
+svcModel.fit(train_X, train_Y)
+Y_pred_rf = svcModel.predict(test_X)
+svcModel.score(train_X,train_Y)
+acc_svc = round(svcModel.score(train_X, train_Y) * 100, 2)
+
+#print("Important features")
+#pd.Series(svcModel.feature_importances_,train_X.columns).sort_values(ascending=True).plot.barh(width=0.8)
+print('__'*30)
+print(acc_svc)
+
+
+# In[ ]:
+
+
+# Choosing knn
+# best score 0.73684
+
+knnModel = KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+           metric_params=None, n_jobs=None, n_neighbors=10, p=2,
+           weights='uniform')
+knnModel.fit(train_X, train_Y)
+Y_pred_rf = knnModel.predict(test_X)
+knnModel.score(train_X,train_Y)
+acc_knn = round(knnModel.score(train_X, train_Y) * 100, 2)
+
+#print("Important features")
+#pd.Series(svcModel.feature_importances_,train_X.columns).sort_values(ascending=True).plot.barh(width=0.8)
+print('__'*30)
+print(acc_knn)
+
+
+# In[ ]:
+
+
+
+
+
+# In[7]:
+
+
 # submission
 submission = pd.DataFrame({
         "PassengerId": data_test["PassengerId"],
         "Survived": Y_pred_rf
     })
 submission.to_csv('submission.csv', index=False)
+
+
+# In[ ]:
+
+
+
 
